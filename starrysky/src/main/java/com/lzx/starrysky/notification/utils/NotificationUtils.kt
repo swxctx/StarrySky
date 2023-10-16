@@ -60,17 +60,23 @@ object NotificationUtils {
         if (bundle != null) {
             openUI.putExtra("bundleInfo", bundle)
         }
+
+        var flags = PendingIntent.FLAG_CANCEL_CURRENT
+        if (Build.VERSION.SDK_INT >= 31) {
+            flags = flags or PendingIntent.FLAG_IMMUTABLE
+        }
+
         @SuppressLint("WrongConstant")
         val pendingIntent: PendingIntent
         pendingIntent = when (mBuilder?.pendingIntentMode) {
             NotificationConfig.MODE_ACTIVITY -> PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                flags)
             NotificationConfig.MODE_BROADCAST -> PendingIntent.getBroadcast(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                flags)
             NotificationConfig.MODE_SERVICE -> PendingIntent.getService(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                flags)
             else -> PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                flags)
         }
         return pendingIntent
     }
