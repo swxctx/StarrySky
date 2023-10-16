@@ -61,11 +61,7 @@ object NotificationUtils {
             openUI.putExtra("bundleInfo", bundle)
         }
 
-        var flags = PendingIntent.FLAG_CANCEL_CURRENT
-        if (Build.VERSION.SDK_INT >= 31) {
-            flags = flags or PendingIntent.FLAG_IMMUTABLE
-        }
-
+        var flags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         @SuppressLint("WrongConstant")
         val pendingIntent: PendingIntent
         pendingIntent = when (mBuilder?.pendingIntentMode) {

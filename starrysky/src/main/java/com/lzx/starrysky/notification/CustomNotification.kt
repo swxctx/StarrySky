@@ -638,12 +638,8 @@ class CustomNotification constructor(service: MusicService, config: Notification
         val intent = Intent(action)
         intent.setPackage(packageName)
 
-        var flags = PendingIntent.FLAG_CANCEL_CURRENT
-        if (Build.VERSION.SDK_INT >= 31) {
-            flags = flags or PendingIntent.FLAG_IMMUTABLE
-        }
         return PendingIntent
             .getBroadcast(mService, INotification.REQUEST_CODE, intent,
-                flags)
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 }
