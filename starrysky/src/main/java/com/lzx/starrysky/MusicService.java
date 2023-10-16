@@ -2,6 +2,7 @@ package com.lzx.starrysky;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -56,14 +57,15 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
 
 
         //会话连接
-        mediaSession = new MediaSessionCompat(this, "MusicService");
+        Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+        PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE);
+        ComponentName mediaButtonReceiver = new ComponentName(this, MusicService.class);
+        mediaSession = new MediaSessionCompat(this, "MusicService", mediaButtonReceiver, sessionActivityPendingIntent);
         setSessionToken(mediaSession.getSessionToken());
         try {
             //这里可能会报 ：
             //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.content.Intent
             // .migrateExtraStreamToClipData()' on a null object reference
-            Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE);
             mediaSession.setSessionActivity(sessionActivityPendingIntent);
         } catch (Exception ex) {
             ex.printStackTrace();
