@@ -63,7 +63,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
             //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.content.Intent
             // .migrateExtraStreamToClipData()' on a null object reference
             Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0);
+            PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE);
             mediaSession.setSessionActivity(sessionActivityPendingIntent);
         } catch (Exception ex) {
             ex.printStackTrace();

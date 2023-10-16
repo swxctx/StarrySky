@@ -368,9 +368,13 @@ class SystemNotification constructor(service: MusicService, config: Notification
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(action)
         intent.setPackage(packageName)
+        var flags = PendingIntent.FLAG_CANCEL_CURRENT
+        if (Build.VERSION.SDK_INT >= 31) {
+            flags = flags or PendingIntent.FLAG_IMMUTABLE
+        }
         return PendingIntent
             .getBroadcast(mService, INotification.REQUEST_CODE, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                flags)
     }
 
     override fun updateFavoriteUI(isFavorite: Boolean) {
