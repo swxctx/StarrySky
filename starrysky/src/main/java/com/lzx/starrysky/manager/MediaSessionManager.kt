@@ -1,5 +1,6 @@
 package com.lzx.starrysky.manager
 
+import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 import android.os.Handler
@@ -7,6 +8,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.utils.getPendingIntent
 import com.lzx.starrysky.utils.orDef
 
 /**
@@ -30,7 +32,7 @@ class MediaSessionManager(val context: Context,
     private val handler: Handler? = null
 
     init {
-        mediaSession = MediaSessionCompat(context, "MediaSessionManager")
+        mediaSession = MediaSessionCompat(context, "MediaSessionManager", null, context.getPendingIntent(0, ""))
         //指明支持的按键信息类型
         mediaSession?.setFlags(
             MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
