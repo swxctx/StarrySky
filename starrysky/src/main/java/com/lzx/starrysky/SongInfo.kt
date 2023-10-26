@@ -18,6 +18,7 @@ class SongInfo(
     var songCover: String = "",  //音乐封面
     var duration: Long = -1, //音乐长度
     var decode: Boolean = false, //是否需要解码，如果要解码，最好用本地音频
+    var favorites: Int = 0, //喜欢数
     var albumSongCount: Int = 0,     //专辑音乐数
     var albumPlayCount: Int = 0,    //专辑播放数
     var headData: HashMap<String, String>? = hashMapOf() //header 信息
@@ -69,6 +70,7 @@ class SongInfo(
         if (songCover != other.songCover) return false
         if (duration != other.duration) return false
         if (decode != other.decode) return false
+        if (favorites != other.favorites) return false
         if (albumSongCount != other.albumSongCount) return false
         if (albumPlayCount != other.albumPlayCount) return false
         if (headData != other.headData) return false
@@ -85,6 +87,7 @@ class SongInfo(
         result = 31 * result + songCover.hashCode()
         result = 31 * result + duration.hashCode()
         result = 31 * result + decode.hashCode()
+        result = 31 * result + favorites
         result = 31 * result + albumSongCount
         result = 31 * result + albumPlayCount
         result = 31 * result + (headData?.hashCode() ?: 0)
