@@ -88,7 +88,7 @@ class DynamicActivity : AppCompatActivity() {
         anim.duration = 500
         anim?.interpolator = LinearInterpolator()
         anim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?) {
+            override fun onAnimationStart(animation: Animator) {
                 super.onAnimationStart(animation)
                 voiceBar.visibility = View.VISIBLE
             }
@@ -104,7 +104,7 @@ class DynamicActivity : AppCompatActivity() {
         anim.duration = 500
         anim?.interpolator = LinearInterpolator()
         anim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
                 voiceBar.visibility = View.GONE
             }

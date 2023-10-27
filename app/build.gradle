@@ -4,11 +4,11 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.lzx.starrysky"
-        minSdkVersion 16
-        targetSdkVersion 31
+        minSdkVersion 19
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -33,6 +33,7 @@ android {
         implementation fileTree(dir: 'libs', include: ['*.jar'])
         //noinspection GradleCompatible
         implementation 'com.android.support:appcompat-v7:28.0.0'
+        //noinspection GradleCompatible
         implementation "com.android.support:design:28.0.0"
         implementation 'androidx.constraintlayout:constraintlayout:2.0.3'
         implementation 'com.github.bumptech.glide:glide:4.11.0'
@@ -46,12 +47,10 @@ android {
         implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-beta01"
 
         implementation project(':starrysky')
-//        implementation 'com.github.EspoirX:StarrySky:v2.6.3'
-
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.14.1'
-        implementation 'com.google.android.exoplayer:extension-rtmp:2.14.1'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.14.1'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.14.1'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.7'
+        implementation 'com.google.android.exoplayer:extension-rtmp:2.18.7'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.7'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.18.7'
 
         implementation 'com.qw:soulpermission:1.3.0'
         implementation 'com.danikula:videocache:2.7.1'

@@ -8,6 +8,7 @@ import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -23,9 +24,9 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
 import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.Util
@@ -206,35 +207,35 @@ class ExoPlayback(
         }
         dataSourceFactory = buildDataSourceFactory(type)
         return when (type) {
-            C.TYPE_DASH -> {
+            C.CONTENT_TYPE_DASH -> {
                 if ("source.dash.DashMediaSource".hasMediaSource()) {
                     return DashMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
                 } else {
                     throw IllegalStateException("has not DashMediaSource")
                 }
             }
-            C.TYPE_SS -> {
+            C.CONTENT_TYPE_SS -> {
                 if ("source.smoothstreaming.SsMediaSource".hasMediaSource()) {
                     return SsMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
                 } else {
                     throw IllegalStateException("has not SsMediaSource")
                 }
             }
-            C.TYPE_HLS -> {
+            C.COLOR_TRANSFER_HLG -> {
                 if ("source.hls.HlsMediaSource".hasMediaSource()) {
                     return HlsMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
                 } else {
                     throw IllegalStateException("has not HlsMediaSource")
                 }
             }
-            C.TYPE_RTSP -> {
+            C.CONTENT_TYPE_RTSP -> {
                 if ("source.rtsp.RtspMediaSource".hasMediaSource()) {
                     return RtspMediaSource.Factory().createMediaSource(MediaItem.fromUri(uri))
                 } else {
                     throw IllegalStateException("has not RtspMediaSource")
                 }
             }
-            C.TYPE_OTHER -> {
+            C.CONTENT_TYPE_OTHER -> {
                 ProgressiveMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
             }
             TYPE_RTMP -> {
@@ -257,7 +258,7 @@ class ExoPlayback(
     @Synchronized
     private fun createExoPlayer() {
         if (player == null) {
-            @ExtensionRendererMode val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+            val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
             val renderersFactory = DefaultRenderersFactory(context)
                 .setExtensionRendererMode(extensionRendererMode)
 
@@ -277,7 +278,7 @@ class ExoPlayback(
         }
     }
 
-    @Synchronized
+    /*@Synchronized
     private fun buildDataSourceFactory(type: Int): DataSource.Factory? {
         val userAgent = Util.getUserAgent(context, "StarrySky")
         val httpDataSourceFactory = DefaultHttpDataSourceFactory(
@@ -291,6 +292,24 @@ class ExoPlayback(
             buildCacheDataSource(upstreamFactory, cache.getDownloadCache())
         } else {
             DefaultDataSourceFactory(context, httpDataSourceFactory)
+        }
+    }*/
+
+    @Synchronized
+    private fun buildDataSourceFactory(type: Int): DataSource.Factory? {
+        val userAgent = Util.getUserAgent(context, "StarrySky")
+        // 创建一个新的 DefaultHttpDataSource.Factory，替换原来的 DefaultHttpDataSourceFactory
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent(userAgent)
+            .setConnectTimeoutMs(DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS)
+            .setReadTimeoutMs(DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS)
+            .setAllowCrossProtocolRedirects(true)
+
+        return if (cache?.isOpenCache() == true && cache is ExoCache && !type.isStreamingType()) {
+            val upstreamFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+            buildCacheDataSource(upstreamFactory, cache.getDownloadCache())
+        } else {
+            DefaultDataSource.Factory(context, httpDataSourceFactory)
         }
     }
 
@@ -382,7 +401,7 @@ class ExoPlayback(
         this.callback = callback
     }
 
-    private inner class ExoPlayerEventListener : Player.EventListener {
+    private inner class ExoPlayerEventListener : Player.Listener {
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             var newState = STATE_IDLE
@@ -408,16 +427,16 @@ class ExoPlayback(
             }
         }
 
-        override fun onPlayerError(error: ExoPlaybackException) {
+        override fun onPlayerError(error: PlaybackException) {
             error.printStackTrace()
             hasError = true
-            val what: String = when (error.type) {
-                ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message.toString()
-                ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message.toString()
-                ExoPlaybackException.TYPE_UNEXPECTED -> error.unexpectedException.message.toString()
+            val what: String = when (error.errorCode) {
+                ExoPlaybackException.TYPE_SOURCE -> error.message.toString()
+                ExoPlaybackException.TYPE_RENDERER -> error.message.toString()
+                ExoPlaybackException.TYPE_UNEXPECTED -> error.message.toString()
                 else -> "Unknown: $error"
             }
-            if (error.type == ExoPlaybackException.TYPE_SOURCE) {
+            if (error.errorCode == PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND) {
                 sourceTypeErrorInfo.happenSourceError = true
                 sourceTypeErrorInfo.seekToPositionWhenError = sourceTypeErrorInfo.seekToPosition
                 sourceTypeErrorInfo.currPositionWhenError = currentStreamPosition()
