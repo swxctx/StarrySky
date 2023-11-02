@@ -59,11 +59,11 @@ open class TestApplication : Application() {
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
             .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
             //.setCache(AndroidVideoCache(this))
-            .addInterceptor(PermissionInterceptor(this))
+//            .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor(), InterceptorThread.IO)
             .setImageLoader(GlideImageLoader())
             .setNotificationSwitch(true)
-            .setNotificationType(INotification.CUSTOM_NOTIFICATION)
+            .setNotificationType(INotification.SYSTEM_NOTIFICATION)
             .setNotificationConfig(notificationConfig)
             .apply()
     }
