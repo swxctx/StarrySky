@@ -446,9 +446,9 @@ class ExoPlayback(
     }
 
     override fun focusStateChange(info: FocusInfo) {
-        if (isAutoManagerFocus) {
+        /*if (isAutoManagerFocus) {
             return
-        }
+        }*/
         callback?.onFocusStateChange(FocusInfo(currSongInfo, info.audioFocusState, info.playerCommand, info.volume))
     }
 }
